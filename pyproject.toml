@@ -1,0 +1,32 @@
+[project]
+name = "whisper-dictate"
+version = "0.1.0"
+description = "Local push-to-talk dictation for macOS: double-tap Fn, speak, and the text is pasted into any app (whisper.cpp)."
+readme = "README.md"
+license = "LicenseRef-MIT-Commons-Clause"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "anthropic>=2.12.0",
+    "cactus-compute>=4.2.6",
+    "certifi>=2025.11.12",
+    "keyring>=25.7.0",
+    "pyobjc-framework-applicationservices>=12.1",
+    "pyobjc-framework-avfoundation>=12.1",
+    "pyobjc-framework-quartz>=12.1",
+    "pyyaml>=6.0.3",
+]
+
+[project.optional-dependencies]
+# Local LLM post-processing. Compiled from source on install (needs the Xcode
+# Command Line Tools, takes a few minutes): uv sync --extra local-llm
+local-llm = [
+    "llama-cpp-python>=0.3.16",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]

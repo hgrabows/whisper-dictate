@@ -1,0 +1,43 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Local dictation artifacts
+tmp/*.wav
+tmp/*.txt
+
+# Runtime onboarding marker (created at first launch in dev runs)
+.onboarding_complete
+
+# Downloaded whisper.cpp models (fetched via "Whisper-Modell" menu)
+models/*.bin
+models/.*.part
+
+# Runtime PID of the background whisper-server (dev runs write it here)
+whisper-server.pid
+
+# Personal settings, keys and prompts (created from the templates on first start)
+config.json
+credentials.yaml
+current_prompts.json
+whisper_dictate.lock
+fn_whisper_dictate.lock
+
+# Models and recordings
+models/
+tmp/
+*.gguf
+ggml-*.bin
+*.cact
+
+# Editors / macOS
+.DS_Store
+.idea/
+.vscode/
