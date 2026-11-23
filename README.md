@@ -2,21 +2,27 @@
 
 *[Deutsche Version](README.de.md)*
 
-Local dictation for macOS. Double-tap **Fn**, speak, double-tap **Fn** again,
-and the text appears in whatever app you are typing in: mail, editor, browser,
-terminal.
+Local dictation for macOS, a real, free alternative to Superwhisper.
+Double-tap **Fn**, speak, double-tap **Fn** again, and the text appears in
+whatever app you are typing in: mail, editor, browser, terminal.
 
-- **Runs on your Mac.** Speech recognition uses [whisper.cpp](https://github.com/ggml-org/whisper.cpp)
-  or [Cactus Whistle](https://huggingface.co/Cactus-Compute/whistle). Your
-  audio never leaves the machine.
+- **Local processing.** Speech recognition uses local models: Whisper via
+  [whisper.cpp](https://github.com/ggml-org/whisper.cpp) or
+  [Cactus Whistle](https://huggingface.co/Cactus-Compute/whistle). Your audio
+  never leaves the machine. The AI rewrite can run on a local model too.
 - **Fast.** The model stays loaded in a background `whisper-server`; a typical
   dictation is ready about 0.5–1.2 s after you stop speaking (large-v3-turbo,
   Apple Silicon).
 - **Spoken punctuation and commands** in English and German: "comma",
   "new line", "delete that", "press enter" …
-- **Optional LLM rewrite**: turn a rough dictation into a polished email,
-  letter or code with Claude, ChatGPT, Gemini, DeepSeek, any OpenAI-compatible
-  server or a local model. Off by default.
+- **Context-aware modes.** Post-processing adapts the text to the situation:
+  a rough dictation becomes a formal email, a letter, code, a translation or an
+  academic paragraph. Add your own modes and give background knowledge as
+  context. The AI behind it is Claude, ChatGPT, Gemini, DeepSeek, any
+  OpenAI-compatible server or a local model. No AI by default.
+- **Workflow integration.** The text is pasted straight into the active app at
+  the cursor, and your clipboard is restored. With the clipboard instruction
+  you edit copied text by voice ("summarize this in three sentences").
 - **Interface in English or German.**
 
 > Status: personal project, used daily on Apple Silicon. Expect rough edges.
@@ -129,6 +135,30 @@ generate code, translate, edit copied text by voice ("summarize this"), use
 background context, and your own prompts. The **[user guide](docs/manual.md)**
 explains all modes and windows.
 
+### The settings window
+
+| Element | What it does |
+|---|---|
+| **Start recording** | Starts and stops a recording with the mouse, if Fn+Fn is not available |
+| **Personal data…** | Your name, address, email and phone, stored locally in `config.json`. The app then spells your name correctly, even without AI, and the letter mode signs with your contact block. In AI modes the name (and for letters the contact block) is part of the prompt sent to the provider. |
+| **Copy last text** | Puts the last dictation on the clipboard, in case it was pasted in the wrong place |
+| **LLM status** / **Show changes** | Result of the last AI run; the button shows the text before and after the AI |
+| **Language (input / Whisper)** | The language you speak (`en`, `de`, … or `auto`) |
+| **Language (output / LLM)** | The language the AI writes in, e.g. dictate in German, get English |
+| **Word limits** | Optional minimum and maximum number of words for AI modes, e.g. a maximum of 80 for short replies. Empty means no limit. No effect without AI. |
+| **Use context** | Sends background knowledge along with every AI run: names, technical terms, the email you are replying to. You enter it under **Context → Edit context…**. |
+| **Append results automatically** | Adds each AI result to the context, so the AI knows the earlier dictations in a series. Long context is summarized automatically. |
+| **No post-processing** | Text exactly as Whisper recognized it |
+| **Post-processing without AI** (default) | Spoken punctuation, line breaks and your name are applied locally |
+| **Clipboard instruction** | Your dictation is an instruction for text you copied before: copy a text with Cmd+C, dictate "summarize this in three sentences", and the result is pasted |
+| **Prompt modes** (Rephrase formally … Academic paragraph) | The AI rewrites the dictation following the mode's prompt. You change, delete or add these modes under **Prompts → Edit prompts…** in the menu bar. |
+| **Start automatically at login** | Starts the app when you log in |
+| **Check permissions…** | Shows which macOS permissions (microphone, accessibility, input monitoring) are missing and opens the right settings page |
+| **Interface language** | English, German or like macOS; applies after a restart |
+
+Context and prompt modes need an LLM provider (**LLM (Post-Processing) →
+Providers & API keys…**). Details and examples: [user guide](docs/manual.md).
+
 ### Spoken punctuation
 
 Say the punctuation mark as a word; it becomes the character. The rules follow
@@ -164,6 +194,18 @@ Say the command as the whole dictation:
 In the mode "No post-processing", "press enter" also works at the end of a
 dictation ("… see you tomorrow, press enter"). The other modes never press
 Return after pasting, so a rewritten text is never sent by accident.
+
+### Delete shortcut
+
+**Ctrl+X** (Control, not Cmd) presses Backspace 30 times at the cursor, in any
+app. Handy for removing a dictation that went wrong without saying anything.
+Unlike "delete that", it always deletes the same number of characters. Change
+the count with `CTRL_X_DELETE_COUNT`; `0` turns the shortcut off. Only plain
+Ctrl+X triggers it, not combinations with Shift, Option or Cmd.
+
+The app still receives Ctrl+X as well. Regular Mac apps ignore it (cut is
+Cmd+X), but in the Terminal it is a shortcut of its own, for example "exit" in
+`nano`.
 
 ### Interface language
 
@@ -295,6 +337,7 @@ override the file.
 | `CUSTOM_LLM_URL` | – | Address of the custom OpenAI-compatible provider |
 | `SHOW_SETTINGS_GUI` | `1` | Show the settings window on start |
 | `PASTE_RESTORE_CLIPBOARD` | `1` | Restore the clipboard after pasting |
+| `CTRL_X_DELETE_COUNT` | `30` | Backspaces sent by Ctrl+X; `0` turns the shortcut off |
 | `DOUBLE_TAP_WINDOW` | `0.6` | Max. seconds between the two Fn taps (env only) |
 
 Run `uv run python whisper_dictate.py --help` for command-line options.

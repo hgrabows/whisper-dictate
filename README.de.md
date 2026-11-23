@@ -2,23 +2,31 @@
 
 *[English version](README.md)*
 
-Lokales Diktieren für macOS. Zweimal **Fn** tippen, sprechen, wieder zweimal
-**Fn** tippen, und der Text steht in der App, in der du gerade schreibst:
-Mail, Editor, Browser, Terminal.
+Lokales Diktieren für macOS, eine echte, kostenlose Alternative zu
+Superwhisper. Zweimal **Fn** tippen, sprechen, wieder zweimal **Fn** tippen,
+und der Text steht in der App, in der du gerade schreibst: Mail, Editor,
+Browser, Terminal.
 
-- **Läuft auf deinem Mac.** Die Spracherkennung nutzt
-  [whisper.cpp](https://github.com/ggml-org/whisper.cpp) oder
+- **Lokale Verarbeitung.** Die Spracherkennung nutzt lokale Modelle:
+  Whisper über [whisper.cpp](https://github.com/ggml-org/whisper.cpp) oder
   [Cactus Whistle](https://huggingface.co/Cactus-Compute/whistle). Deine
-  Aufnahmen verlassen den Rechner nicht.
+  Aufnahmen verlassen den Rechner nicht. Auch die KI-Überarbeitung kann mit
+  einem lokalen Modell laufen.
 - **Schnell.** Das Modell bleibt in einem `whisper-server` im Hintergrund
   geladen. Ein typisches Diktat ist 0,5–1,2 s nach dem Sprechen fertig
   (large-v3-turbo, Apple Silicon).
 - **Gesprochene Satzzeichen und Befehle** auf Deutsch und Englisch: „Komma“,
   „neue Zeile“, „lösche das“, „drücke Enter“ …
-- **Optionale LLM-Überarbeitung**: Aus einem groben Diktat wird eine fertige
-  E-Mail, ein Brief oder Quellcode, mit Claude, ChatGPT, Gemini, DeepSeek,
-  einem beliebigen OpenAI-kompatiblen Server oder einem lokalen Modell.
-  Standardmäßig aus.
+- **Kontextbezogene Modi.** Das Post-Processing passt den Text an die
+  Situation an: Aus einem groben Diktat wird eine formelle E-Mail, ein Brief,
+  Quellcode, eine Übersetzung oder ein wissenschaftlicher Absatz. Eigene Modi
+  legst du selbst an, Hintergrundwissen gibst du als Kontext mit. Die KI dafür
+  ist Claude, ChatGPT, Gemini, DeepSeek, ein beliebiger OpenAI-kompatibler
+  Server oder ein lokales Modell. Standardmäßig ohne KI.
+- **Workflow-Integration.** Der Text landet direkt im aktiven Programm an der
+  Cursorposition, deine Zwischenablage bleibt erhalten. Mit der
+  Clipboard-Anweisung bearbeitest du kopierten Text per Sprache („fasse das in
+  drei Sätzen zusammen“).
 - **Oberfläche auf Deutsch oder Englisch.**
 
 > Status: privates Projekt, täglich auf Apple Silicon im Einsatz. Rechne mit
@@ -139,6 +147,31 @@ umschreiben, Code erzeugen, übersetzen, kopierten Text per Sprache bearbeiten
 („fasse das zusammen“), Hintergrund-Kontext nutzen und eigene Prompts. Die
 **[Bedienungsanleitung](docs/manual.de.md)** erklärt alle Modi und Fenster.
 
+### Das Einstellungsfenster
+
+| Element | Was es macht |
+|---|---|
+| **Aufnahme starten** | Startet und stoppt eine Aufnahme per Maus, falls Fn+Fn nicht geht |
+| **Persönliche Daten…** | Dein Name, Adresse, E-Mail und Telefon, lokal in `config.json` gespeichert. Damit schreibt die App deinen Namen richtig, auch ohne KI, und der Brief-Modus unterschreibt mit deinem Kontaktblock. In KI-Modi steht der Name (beim Brief auch der Kontaktblock) im Prompt, der an den Anbieter geht. |
+| **Letzten Text kopieren** | Legt das letzte Diktat in die Zwischenablage, falls es an der falschen Stelle gelandet ist |
+| **LLM-Status** / **Änderungen anzeigen** | Ergebnis des letzten KI-Durchlaufs; der Knopf zeigt den Text vor und nach der KI |
+| **Sprache (Eingabe / Whisper)** | Die Sprache, die du sprichst (`de`, `en`, … oder `auto`) |
+| **Sprache (Ausgabe / LLM)** | Die Sprache, in der die KI schreibt, z. B. deutsch diktieren, englisch erhalten |
+| **Wortgrenzen** | Optional Mindest- und Höchstzahl an Wörtern für KI-Modi, z. B. höchstens 80 für kurze Antworten. Leer heißt ohne Grenze. Ohne KI wirkungslos. |
+| **Kontext verwenden** | Schickt bei jedem KI-Durchlauf Hintergrundwissen mit: Namen, Fachbegriffe, die Mail, auf die du antwortest. Eintragen unter **Kontext → Kontext bearbeiten…**. |
+| **Ergebnisse automatisch anhängen** | Hängt jedes KI-Ergebnis an den Kontext an, damit die KI bei einer Serie von Diktaten die vorherigen kennt. Zu langer Kontext wird automatisch zusammengefasst. |
+| **Kein Post-Processing** | Text genau so, wie Whisper ihn erkannt hat |
+| **Post-Processing ohne KI** (Standard) | Gesprochene Satzzeichen, Zeilenumbrüche und dein Name werden lokal umgesetzt |
+| **Clipboard-Anweisung** | Dein Diktat ist eine Anweisung für einen vorher kopierten Text: Text mit Cmd+C kopieren, „fasse das in drei Sätzen zusammen“ diktieren, das Ergebnis wird eingefügt |
+| **Prompt-Modi** (Formell umformulieren … Artikel - Absatz) | Die KI schreibt das Diktat nach dem Prompt des Modus um. Ändern, löschen oder neu anlegen unter **Prompts → Prompts bearbeiten…** in der Menüleiste. |
+| **Beim Anmelden automatisch starten** | Startet die App beim Anmelden |
+| **Berechtigungen prüfen…** | Zeigt, welche macOS-Rechte (Mikrofon, Bedienungshilfen, Eingabeüberwachung) fehlen, und öffnet die passende Einstellungsseite |
+| **Sprache der Oberfläche** | Deutsch, Englisch oder wie macOS; wirkt nach einem Neustart |
+
+Kontext und Prompt-Modi brauchen einen LLM-Anbieter (**LLM (Post-Processing) →
+Anbieter & API-Keys…**). Details und Beispiele:
+[Bedienungsanleitung](docs/manual.de.md).
+
 ### Gesprochene Satzzeichen
 
 Sprich das Satzzeichen als Wort, es wird zum Zeichen. Die Regeln richten sich
@@ -174,6 +207,18 @@ Im Modus „Kein Post-Processing“ funktioniert „Enter“ auch am Ende eines
 Diktats („… bis morgen, Enter“). Die anderen Modi drücken nach dem Einfügen nie
 die Eingabetaste, damit ein umformulierter Text nicht versehentlich abgeschickt
 wird.
+
+### Lösch-Taste
+
+**Ctrl+X** (Control, nicht Cmd) drückt am Cursor 30-mal Backspace, in jeder
+App. Praktisch, um ein missratenes Diktat ohne Sprachbefehl zu entfernen. Anders
+als „lösche das“ löscht es immer gleich viele Zeichen. Die Anzahl stellst du mit
+`CTRL_X_DELETE_COUNT` ein; `0` schaltet die Taste ab. Nur Ctrl+X allein löst
+aus, nicht zusammen mit Shift, Option oder Cmd.
+
+Die App im Vordergrund bekommt Ctrl+X trotzdem auch. Normale Mac-Apps
+ignorieren es (Ausschneiden ist Cmd+X), im Terminal ist es aber ein eigener
+Befehl, zum Beispiel „Beenden“ in `nano`.
 
 ### Sprache der Oberfläche
 
@@ -308,6 +353,7 @@ Umgebungsvariablen haben Vorrang vor der Datei.
 | `CUSTOM_LLM_URL` | – | Adresse des eigenen OpenAI-kompatiblen Anbieters |
 | `SHOW_SETTINGS_GUI` | `1` | Einstellungsfenster beim Start zeigen |
 | `PASTE_RESTORE_CLIPBOARD` | `1` | Zwischenablage nach dem Einfügen wiederherstellen |
+| `CTRL_X_DELETE_COUNT` | `30` | Anzahl Backspaces für Ctrl+X; `0` schaltet die Taste ab |
 | `DOUBLE_TAP_WINDOW` | `0.6` | Max. Sekunden zwischen den beiden Fn-Taps (nur Umgebungsvariable) |
 
 Kommandozeilen-Optionen: `uv run python whisper_dictate.py --help`.

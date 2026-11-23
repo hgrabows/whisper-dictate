@@ -33,11 +33,13 @@ From top to bottom:
 | **Use context / Append results automatically** | Background knowledge for the AI (see [below](#context)) |
 | **Select post-processing** | The mode (see [below](#modes)) |
 | **Start automatically at login** | Autostart (see README) |
+| **Check permissions…** | Shows which macOS permissions (microphone, accessibility, input monitoring) are missing and opens the right settings page |
 | **Interface language** | English, German or like macOS |
 
 The menu bar offers the most common switches directly: **Prompts** (mode),
 **LLM (Post-Processing)** (provider), **Whisper model** and **Context**. The
-last entry of each menu opens the matching window.
+last entry of each menu opens the matching window. **Help → User guide** opens
+this guide.
 
 ## Dictating
 
@@ -52,6 +54,10 @@ last entry of each menu opens the matching window.
 You speak punctuation ("comma", "period", "new line"). Saying "delete that",
 "undo" or "press enter" as the whole dictation controls the app. The full lists
 are in the README under *Spoken punctuation* and *Voice commands*.
+
+**Ctrl+X** (Control, not Cmd) deletes the last 30 characters before the cursor,
+without speaking. The count is set with `CTRL_X_DELETE_COUNT` (README, *Delete
+shortcut*).
 
 ## Modes
 
@@ -90,8 +96,10 @@ The built-in prompt modes:
 | **Translate into English** | Meaning-based translation; the output language setting is ignored here |
 | **Academic paragraph** | Keywords become one coherent academic paragraph |
 
-You can change or delete these modes and add your own (see
-[Your own prompts](#your-own-prompts)).
+You can change or delete these modes and add your own: in the menu bar under
+**Prompts → Edit prompts…** (see [Your own prompts](#your-own-prompts)). The
+built-in modes come in English and German; which version you get follows the
+interface language.
 
 ## Clipboard instruction
 

@@ -211,7 +211,14 @@ def _is_ctrl_x_keydown(event) -> bool:
             return False
         flags = CGEventGetFlags(event)
         ctrl_mask = getattr(Quartz, "kCGEventFlagMaskControl", 0)
-        return bool(flags & ctrl_mask)
+        # Plain Ctrl+X only: Ctrl+Shift+X, Ctrl+Option+X, Ctrl+Cmd+X belong
+        # to other apps' shortcuts and must not trigger the burst delete.
+        other_mask = (
+            getattr(Quartz, "kCGEventFlagMaskShift", 0)
+            | getattr(Quartz, "kCGEventFlagMaskAlternate", 0)
+            | getattr(Quartz, "kCGEventFlagMaskCommand", 0)
+        )
+        return bool(flags & ctrl_mask) and not (flags & other_mask)
     except Exception:
         return False
 

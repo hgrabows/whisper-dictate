@@ -33,11 +33,13 @@ Von oben nach unten:
 | **Kontext verwenden / Ergebnisse automatisch anhängen** | Hintergrundwissen für die KI (siehe [unten](#kontext)) |
 | **Post-Processing auswählen** | Der Modus (siehe [unten](#die-modi)) |
 | **Beim Anmelden automatisch starten** | Autostart (siehe README) |
+| **Berechtigungen prüfen…** | Zeigt, welche macOS-Rechte (Mikrofon, Bedienungshilfen, Eingabeüberwachung) fehlen, und öffnet die passende Einstellungsseite |
 | **Sprache der Oberfläche** | Deutsch, Englisch oder wie macOS |
 
 Die Menüleiste bietet die häufigsten Umschalter direkt an: **Prompts** (Modus),
 **LLM (Post-Processing)** (Anbieter), **Whisper-Modell** und **Kontext**. Der
-letzte Eintrag jedes Menüs öffnet das passende Fenster.
+letzte Eintrag jedes Menüs öffnet das passende Fenster. **Hilfe →
+Bedienungsanleitung** öffnet diese Anleitung.
 
 ## Diktieren
 
@@ -53,6 +55,10 @@ Satzzeichen sprichst du aus („Komma“, „Punkt“, „neue Zeile“). Mit �
 „rückgängig“ oder „drücke Enter“ als ganzem Diktat steuerst du die App. Die
 vollständigen Listen stehen im README unter *Gesprochene Satzzeichen* und
 *Sprachbefehle*.
+
+**Ctrl+X** (Control, nicht Cmd) löscht ohne Sprechen die letzten 30 Zeichen vor
+dem Cursor. Die Anzahl stellst du mit `CTRL_X_DELETE_COUNT` ein (README,
+*Lösch-Taste*).
 
 ## Die Modi
 
@@ -94,8 +100,10 @@ Die mitgelieferten Prompt-Modi:
 | **Übersetzen ins Englische** | Sinngemäße Übersetzung; die Ausgabesprache-Einstellung wird hier ignoriert |
 | **Artikel - Absatz** | Aus Stichworten wird ein zusammenhängender wissenschaftlicher Absatz |
 
-Diese Modi kannst du ändern, löschen oder um eigene ergänzen (siehe
-[Eigene Prompts](#eigene-prompts)).
+Diese Modi kannst du ändern, löschen oder um eigene ergänzen: in der Menüleiste
+unter **Prompts → Prompts bearbeiten…** (siehe [Eigene Prompts](#eigene-prompts)).
+Die mitgelieferten Modi gibt es auf Deutsch und Englisch; welche Fassung du
+bekommst, richtet sich nach der Sprache der Oberfläche.
 
 ## Clipboard-Anweisung
 

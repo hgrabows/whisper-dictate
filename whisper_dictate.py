@@ -240,6 +240,58 @@ _copy_template_if_missing(
     [PROMPTS_TEMPLATE_PATH] + _candidate_resource_paths("current_prompts.json") + _prompt_template_candidates(),
     fallback_text='{"modes": {}}\n',
 )
+
+
+def swap_untouched_prompts_to_language(
+    current_path: Path, wanted: list[Path], other: list[Path]
+) -> bool:
+    """Switch the built-in prompt modes to the template of the UI language.
+
+    Mode by mode: a mode is replaced only when it is still an unchanged copy
+    of the other language's shipped mode with the same number. Modes the
+    user added or edited are never touched.
+    """
+    def _load(path: Path) -> Optional[dict]:
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except Exception:
+            return None
+        return data if isinstance(data, dict) and isinstance(data.get("modes"), dict) else None
+
+    current = _load(current_path)
+    source = next((p for p in wanted if p.is_file()), None)
+    wanted_data = _load(source) if source is not None else None
+    other_data = next((d for d in (_load(p) for p in other if p.is_file()) if d is not None), None)
+    if current is None or wanted_data is None or other_data is None:
+        return False
+
+    if current == other_data:
+        # Untouched copy: take the template verbatim (keeps its formatting).
+        current_path.write_text(source.read_text(encoding="utf-8"), encoding="utf-8")
+        print(f"🌐 Built-in prompt modes switched to {source.name} (interface language).")
+        return True
+
+    switched = []
+    modes = current["modes"]
+    for key, entry in list(modes.items()):
+        if key in wanted_data["modes"] and other_data["modes"].get(key) == entry:
+            modes[key] = wanted_data["modes"][key]
+            switched.append(key)
+    if not switched:
+        return False
+    current_path.write_text(json.dumps(current, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print(f"🌐 Prompt modes {', '.join(switched)} switched to {source.name} (interface language); own modes kept.")
+    return True
+
+
+if not os.environ.get("WHISPER_CURRENT_PROMPTS_PATH") and not os.environ.get("WHISPER_PROMPTS_PATH"):
+    _other_prompt_template = "prompt.json" if PROMPT_TEMPLATE_NAME == "prompt.en.json" else "prompt.en.json"
+    swap_untouched_prompts_to_language(
+        CURRENT_PROMPTS_PATH,
+        _candidate_resource_paths(PROMPT_TEMPLATE_NAME),
+        _candidate_resource_paths(_other_prompt_template),
+    )
+
 _copy_template_if_missing(
     LOCAL_MODELS_REGISTRY_PATH,
     _candidate_resource_paths("local_models.json"),
@@ -1354,6 +1406,22 @@ def _llm_used_for_mode(mode: int) -> bool:
     if mode == CLIPBOARD_INSTRUCTION_MODE:
         return is_llm_enabled()
     return is_llm_mode(mode) and is_llm_enabled()
+
+
+PROJECT_URL = "https://github.com/hgrabows/whisper-dictate"
+
+
+def manual_url() -> str:
+    """User guide on GitHub in the interface language."""
+    name = "manual.de.md" if ui_language() == "de" else "manual.md"
+    return f"{PROJECT_URL}/blob/main/docs/{name}"
+
+
+def open_url(url: str) -> None:
+    try:
+        subprocess.Popen(["/usr/bin/open", url], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except Exception as e:
+        print(f"⚠️ Could not open {url}: {e}")
 
 
 def _ordered_mode_options() -> list[tuple[int, str]]:
@@ -4947,6 +5015,12 @@ def run_mode_selector_gui(stop_event: threading.Event) -> bool:
     context_menu = tk.Menu(menu_bar, tearoff=0, postcommand=_rebuild_context_menu)
     _rebuild_context_menu()
     menu_bar.add_cascade(label=tr("Kontext", "Context"), menu=context_menu)
+    # name="help" makes Tk use it as the native macOS Help menu (last place,
+    # with the system search field).
+    help_menu = tk.Menu(menu_bar, tearoff=0, name="help")
+    help_menu.add_command(label=tr("Bedienungsanleitung", "User guide"), command=lambda: open_url(manual_url()))
+    help_menu.add_command(label=tr("Projektseite auf GitHub", "Project page on GitHub"), command=lambda: open_url(PROJECT_URL))
+    menu_bar.add_cascade(label=tr("Hilfe", "Help"), menu=help_menu)
     try:
         root.configure(menu=menu_bar)
     except Exception:
